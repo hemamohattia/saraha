@@ -5,4 +5,6 @@ export const NODE_ENV = process.env.NODE_ENV || "development";
 export const port = process.env.PORT || 3000;
 export const DB_URL = process.env.DB_URL;
 export const JWT_SECRET = process.env.JWT_SECRET;
+export const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 export const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
