@@ -7,7 +7,7 @@ import { createUser, findUserByEmail } from "../../DB/repository/user.repository
 import { hashPassword, comparePassword } from "../../common/security/hash.js";
 import { encrypt } from "../../common/security/encryption.js";
 
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../common/security/token.js"; // NEW
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../common/security/token.js"; 
 
 import { emailEvent } from "../../common/events/email.event.js";
 import { GOOGLE_CLIENT_ID } from "../../../config/config.service.js";
@@ -26,12 +26,12 @@ export const registerService = async (body) => {
 
   if (body.phone) body.phone = encrypt(body.phone);
 
-  body.otp = nanoid(6); // NEW
-  body.otpExpires = Date.now() + 10 * 60 * 1000; // NEW
+  body.otp = nanoid(6); 
+  body.otpExpires = Date.now() + 10 * 60 * 1000; 
 
   const user = await createUser(body);
 
-  emailEvent.emit("sendEmail", { to: user.email, otp: body.otp }); // NEW
+  emailEvent.emit("sendEmail", { to: user.email, otp: body.otp }); 
 
   return user;
 };
@@ -59,21 +59,21 @@ export const loginService = async ({ email, password }) => {
   const match = await comparePassword(password, user.password);
   if (!match) throw new Error("Invalid credentials");
 
-  const accessToken = generateAccessToken({ id: user._id, role: user.role }); // NEW
-  const refreshToken = generateRefreshToken({ id: user._id }); // NEW
+  const accessToken = generateAccessToken({ id: user._id, role: user.role }); 
+  const refreshToken = generateRefreshToken({ id: user._id }); 
 
-  user.refreshToken = refreshToken; // NEW
+  user.refreshToken = refreshToken; 
   await user.save();
 
   return { accessToken, refreshToken };
 };
 
 export const refreshTokenService = async (refreshToken) => {
-  const decoded = verifyRefreshToken(refreshToken); // NEW
+  const decoded = verifyRefreshToken(refreshToken); 
   const user = await User.findById(decoded.id);
   if (!user || user.refreshToken !== refreshToken) throw new Error("Invalid refresh token");
 
-  const accessToken = generateAccessToken({ id: user._id, role: user.role }); // NEW
+  const accessToken = generateAccessToken({ id: user._id, role: user.role }); 
   return accessToken;
 };
 
@@ -81,7 +81,7 @@ export const logoutService = async (id) => {
   const user = await User.findById(id);
   if (!user) throw new Error("User not found");
 
-  user.refreshToken = null; // NEW
+  user.refreshToken = null; 
   await user.save();
 };
 
@@ -95,10 +95,10 @@ export const loginWithGoogleService = async (idToken) => {
     user = await createUser({ email, name: payload.name, isEmailConfirmed: true });
   }
 
-  const accessToken = generateAccessToken({ id: user._id, role: user.role }); // NEW
-  const refreshToken = generateRefreshToken({ id: user._id }); // NEW
+  const accessToken = generateAccessToken({ id: user._id, role: user.role }); 
+  const refreshToken = generateRefreshToken({ id: user._id }); 
 
-  user.refreshToken = refreshToken; // NEW
+  user.refreshToken = refreshToken; 
   await user.save();
 
   return { accessToken, refreshToken };
