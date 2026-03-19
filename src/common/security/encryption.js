@@ -1,29 +1,22 @@
 import crypto from "crypto";
 import { ENCRYPTION_KEY } from "../../../config/config.service.js";
 
-const iv = crypto.randomBytes(16);
+const IV_LENGTH = 16;
+const KEY = Buffer.from(ENCRYPTION_KEY, "hex");
 
 export const encrypt = (text) => {
-  const cipher = crypto.createCipheriv(
-    "aes-256-cbc",
-    Buffer.from(ENCRYPTION_KEY),
-    iv
-  );
-  let encrypted = cipher.update(text);
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return iv.toString("hex") + ":" + encrypted.toString("hex");
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv("aes-256-cbc", KEY, iv);
+  let encrypted = cipher.update(text, "utf-8", "hex");
+  encrypted += cipher.final("hex");
+  return `${iv.toString("hex")}:${encrypted}`;
 };
 
-export const decrypt = (text) => {
-  const parts = text.split(":");
-  const ivBuffer = Buffer.from(parts.shift(), "hex");
-  const encryptedText = Buffer.from(parts.join(":"), "hex");
-  const decipher = crypto.createDecipheriv(
-    "aes-256-cbc",
-    Buffer.from(ENCRYPTION_KEY),
-    ivBuffer
-  );
-  let decrypted = decipher.update(encryptedText);
-  decrypted = Buffer.concat([decrypted, decipher.final()]);
-  return decrypted.toString();
+export const decrypt = (encryptedData) => {
+  const [ivHex, encrypted] = encryptedData.split(":");
+  const iv = Buffer.from(ivHex, "hex");
+  const decipher = crypto.createDecipheriv("aes-256-cbc", KEY, iv);
+  let decrypted = decipher.update(encrypted, "hex", "utf-8");
+  decrypted += decipher.final("utf-8");
+  return decrypted;
 };

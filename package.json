@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/main.js",
-    "dev": "nodemon src/main.js",
+    "dev": "node --watch src/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,14 +16,18 @@
     "argon2": "^0.44.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.3.1",
     "google-auth-library": "^10.6.1",
+    "helmet": "^8.1.0",
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
     "multer": "^2.1.1",
-    "nanoid": "^5.1.6"
+    "nanoid": "^5.1.6",
+    "nodemailer": "^8.0.3"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
